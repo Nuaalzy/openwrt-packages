@@ -11,16 +11,16 @@ PKG_NAME:=scutclient
 #If you want to compile your local source code, fill the absolute source path below.
 SRCDIR:=
 ifneq (,$(SRCDIR))
-PKG_VERSION:=$(shell cd $(SRCDIR) && git describe --tags || echo "debug")
+PKG_VERSION:=$(shell cd $(SRCDIR) && git describe --tags || echo "unknown")
 PKG_RELEASE:=1
 PKG_UNPACK=$(CP) $(SRCDIR)/. $(PKG_BUILD_DIR)
 else
-PKG_VERSION:=3.1.2
-PKG_RELEASE:=2
+PKG_VERSION:=v3.0
+PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/scutclient/scutclient.git
-PKG_SOURCE_VERSION:=v$(PKG_VERSION)
+PKG_SOURCE_VERSION:=$(PKG_VERSION)
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 endif
@@ -28,10 +28,11 @@ endif
 PKG_MAINTAINER:=Scutclient Project
 
 PKG_LICENSE:=AGPL-3.0
+
+PKG_FIXUP:=autoreconf
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/cmake.mk
 
 define Package/scutclient
   SECTION:=net
@@ -54,8 +55,6 @@ define Package/scutclient/install
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/openwrt/files/scutclient.config $(1)/etc/config/scutclient
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/openwrt/files/scutclient.init $(1)/etc/init.d/scutclient
-	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/openwrt/files/scutclient.hotplug $(1)/etc/hotplug.d/iface/99-scutclient
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/scutclient $(1)/usr/bin
 endef
